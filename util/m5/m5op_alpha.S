@@ -73,6 +73,8 @@ func:
 #define SWITCHCPU INST(m5_op, 0, 0, M5OP_SWITCH_CPU)
 #define ADDSYMBOL(r1,r2) INST(m5_op, r1, r2, M5OP_ADD_SYMBOL)
 #define PANIC INST(m5_op, 0, 0, M5OP_PANIC)
+#define SPM_ALLOC(r1, r2) INST(m5_op, r1, r2, M5OP_SPM_ALLOC) //SPM
+#define SPM_FREE(r1, r2) INST(m5_op, r1, r2, M5OP_SPM_FREE) //SPM
 
 #define AN_BSM INST(m5_op, M5OP_AN_BSM, 0, M5OP_ANNOTATE)
 #define AN_ESM INST(m5_op, M5OP_AN_ESM, 0, M5OP_ANNOTATE)
@@ -113,6 +115,8 @@ SIMPLE_OP(m5_debug_break, DEBUGBREAK)
 SIMPLE_OP(m5_switch_cpu, SWITCHCPU)
 SIMPLE_OP(m5_add_symbol, ADDSYMBOL(16, 17))
 SIMPLE_OP(m5_panic, PANIC)
+SIMPLE_OP(m5_spm_alloc, SPM_ALLOC(16, 17)) // SPM
+SIMPLE_OP(m5_spm_free, SPM_FREE(16, 17)) // SPM
 
 SIMPLE_OP(m5a_bsm, AN_BSM)
 SIMPLE_OP(m5a_esm, AN_ESM)

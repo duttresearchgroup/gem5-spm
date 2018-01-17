@@ -90,6 +90,9 @@ void workbegin(ThreadContext *tc, uint64_t workid, uint64_t threadid);
 void workend(ThreadContext *tc, uint64_t workid, uint64_t threadid);
 void togglesync(ThreadContext *tc);
 
+void spm_alloc(ThreadContext *tc, uint64_t start, uint64_t end, uint64_t metadata); //SPM
+void spm_free(ThreadContext *tc, uint64_t start, uint64_t end, uint64_t metadata); //SPM
+
 } // namespace PseudoInst
 
 #endif // __SIM_PSEUDO_INST_HH__

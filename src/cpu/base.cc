@@ -437,6 +437,11 @@ BaseCPU::regStats()
         .desc("number of work items this cpu completed")
         ;
 
+    finalCycle
+        .name(name() + ".finalCycle")
+        .desc("final cycle that this cpu finished execution")
+        ;
+
     int size = threadContexts.size();
     if (size > 1) {
         for (int i = 0; i < size; ++i) {

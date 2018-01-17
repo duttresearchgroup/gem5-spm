@@ -97,6 +97,8 @@ class MessageBuffer : public SimObject
 
     const MsgPtr &peekMsgPtr() const { return m_prio_heap.front(); }
 
+    const Message* peekNthMsg (int n);
+
     void enqueue(MsgPtr message, Tick curTime, Tick delta);
 
     //! Updates the delay cycles of the message at the head of the queue,

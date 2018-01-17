@@ -103,6 +103,9 @@
 #include "cpu/base.hh"
 #include "cpu/thread_context.hh"
 #include "mem/page_table.hh"
+#include "mem/spm/att.hh"
+#include "mem/spm/pmmu.hh"
+#include "mem/spm/spm_class/spm.hh"
 #include "params/Process.hh"
 #include "sim/emul_driver.hh"
 #include "sim/futex_map.hh"
@@ -1236,6 +1239,37 @@ statfsFunc(SyscallDesc *desc, int callnum, Process *process,
     return 0;
 }
 
+inline void
+copyATT(ThreadContext *tc, ThreadContext *ctc)
+{
+    BaseCPU *cpu = tc->getCpuPtr();
+    SPM *spm = dynamic_cast<SPM*>(cpu->getMasterPort("dcache_port", 0).getSlavePort().getOwner());
+    PMMU *parent_pmmu = spm->myPMMU;
+
+    cpu = ctc->getCpuPtr();
+    spm = dynamic_cast<SPM*>(cpu->getMasterPort("dcache_port", 0).getSlavePort().getOwner());
+    PMMU *child_pmmu = spm->myPMMU;
+
+    ATT *parent_att = parent_pmmu->my_att;
+    ATT *child_att = child_pmmu->my_att;
+
+    child_att->invalidateATT();
+
+    for(std::map<Addr, ATTEntry* >::const_iterator it = (parent_att->translation_table).begin();
+        it != (parent_att->translation_table).end(); ++it) {
+        if ((it->second)->annotations->shared_data) {
+            child_att->addMapping(it->first,
+                                 (it->second)->destination_node,
+                                 (it->second)->spm_slot_addr,
+                                 (it->second)->annotations);
+            child_att->validateATTEntry(child_att->getMapping(it->first));
+
+        }
+    }
+
+    DPRINTF(SyscallVerbose, "cloneFunc - copyATT\n");
+}
+
 template <class OS>
 SyscallReturn
 cloneFunc(SyscallDesc *desc, int callnum, Process *p, ThreadContext *tc)
@@ -1376,6 +1410,7 @@ cloneFunc(SyscallDesc *desc, int callnum, Process *p, ThreadContext *tc)
 #endif
 
     ctc->pcState(tc->nextInstAddr());
+    copyATT(tc, ctc);
     ctc->activate();
 
     return cp->pid();

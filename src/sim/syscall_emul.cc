@@ -183,6 +183,8 @@ exitFunc(SyscallDesc *desc, int callnum, Process *p, ThreadContext *tc)
 SyscallReturn
 exitGroupFunc(SyscallDesc *desc, int callnum, Process *p, ThreadContext *tc)
 {
+    tc->getCpuPtr()->finalCycle = tc->getCpuPtr()->numCycles;
+
     return exitImpl(desc, callnum, p, tc, true);
 }
 

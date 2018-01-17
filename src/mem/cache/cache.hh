@@ -73,6 +73,8 @@ class BasePrefetcher;
  */
 class Cache : public BaseCache
 {
+    friend class SPM;
+
   protected:
 
     /**

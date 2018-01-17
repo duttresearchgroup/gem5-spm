@@ -79,11 +79,16 @@
 #include "sim/stats.hh"
 #include "sim/system.hh"
 #include "sim/vptr.hh"
+#include "mem/spm/governor/base.hh"
 
 using namespace std;
 
 using namespace Stats;
 using namespace TheISA;
+
+static int num_thread_reached_roi = 0;
+static bool inside_roi = false;
+static int num_active_thread_contexts = 0;
 
 namespace PseudoInst {
 
@@ -198,8 +203,12 @@ pseudoInst(ThreadContext *tc, uint8_t func, uint8_t subfunc)
         break;
 
       case M5OP_ANNOTATE:
-      case M5OP_RESERVED2:
-      case M5OP_RESERVED3:
+      case M5OP_SPM_ALLOC:
+        spm_alloc(tc, args[0], args[1], args[2]);
+        break;
+      case M5OP_SPM_FREE:
+        spm_free(tc, args[0], args[1], args[2]);
+        break;
       case M5OP_RESERVED4:
       case M5OP_RESERVED5:
         warn("Unimplemented m5 op (0x%x)\n", func);
@@ -282,9 +291,52 @@ rpns(ThreadContext *tc)
     return curTick() / SimClock::Int::ns;
 }
 
+inline void
+syncROI(ThreadContext *tc)
+{
+    System *sys = tc->getSystemPtr();
+
+    if (num_active_thread_contexts == 0) {
+        for (int cpuid = 0; cpuid < sys->threadContexts.size(); cpuid++) {
+            ThreadContext *other_tc = sys->threadContexts[cpuid];
+            if (other_tc->status() == ThreadContext::Active) {
+                num_active_thread_contexts++;
+            }
+        }
+    }
+
+    if (num_thread_reached_roi < num_active_thread_contexts - 1) {
+        if (tc->status() == ThreadContext::Active) {
+            num_thread_reached_roi++;
+            tc->suspend();
+            inside_roi = true;
+            DPRINTF(PseudoInst, "PseudoInst::suspending %d / %d \n", num_thread_reached_roi, num_active_thread_contexts);
+        }
+    }
+    else {
+        assert(num_thread_reached_roi == num_active_thread_contexts - 1);
+        assert(inside_roi == true || num_active_thread_contexts == 1);
+        for (int cpuid = 0; cpuid < num_active_thread_contexts; cpuid++) {
+            ThreadContext *other_tc = sys->threadContexts[cpuid];
+            if (other_tc->status() == ThreadContext::Suspended) {
+                other_tc->activate();
+                DPRINTF(PseudoInst, "PseudoInst::activating %d \n", cpuid);
+            }
+        }
+        inside_roi = false;
+        num_thread_reached_roi = 0;
+        num_active_thread_contexts = 0;
+        dumpstats(tc, 0, 0);
+    }
+}
+
 void
 wakeCPU(ThreadContext *tc, uint64_t cpuid)
 {
+    if (cpuid == 0xFFFFFFFFFFFFFFFF) {
+        syncROI(tc);
+        return;
+    }
     DPRINTF(PseudoInst, "PseudoInst::wakeCPU(%i)\n", cpuid);
     System *sys = tc->getSystemPtr();
 
@@ -714,6 +766,24 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
             exitSimLoop("work items exit count reached");
         }
     }
+}
+
+void
+spm_alloc(ThreadContext *tc, uint64_t start, uint64_t end, uint64_t metadata)
+{
+    DPRINTF(PseudoInst, "PseudoInst: spm_alloc in thread %d [start=%#x - end=%#x]\n", tc->contextId(), start, end);
+
+    GOVRequest gov_request(tc, Allocation, start, end, metadata);
+    gov_request.getPMMUPtr()->getGovernor()->allocate(&gov_request);
+}
+
+void
+spm_free(ThreadContext *tc, uint64_t start, uint64_t end, uint64_t metadata)
+{
+    DPRINTF(PseudoInst, "PseudoInst: spm_free in thread %d [start=%#x - end=%#x]\n", tc->contextId(), start, end);
+
+    GOVRequest gov_request(tc, Deallocation, start, end, metadata);
+    gov_request.getPMMUPtr()->getGovernor()->deAllocate(&gov_request);
 }
 
 } // namespace PseudoInst

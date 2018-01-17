@@ -1,0 +1,5 @@
+Read Current (uA),Write Current (uA),Read BER,Write BER,Static Power (mW),Read Access Energy (nJ),Write Access Energy (nJ)
+49,653,0.00E+00,0.00E+00,0,0.146,10.755
+30,529,1.00E-08,1.00E-06,0,0.080,7.059
+26,503,1.00E-07,1.00E-05,0,0.071,6.386
+24,461,1.00E-06,1.00E-04,0,0.066,5.378

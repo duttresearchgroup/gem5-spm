@@ -127,6 +127,14 @@ MessageBuffer::peek() const
     return msg_ptr;
 }
 
+const Message*
+MessageBuffer::peekNthMsg (int n)
+{
+    const Message* msg_ptr = m_prio_heap[n].get();
+    assert(msg_ptr);
+    return msg_ptr;
+}
+
 // FIXME - move me somewhere else
 Tick
 random_time()

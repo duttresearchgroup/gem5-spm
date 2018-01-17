@@ -578,4 +578,52 @@ let {{
     header_output += BasicDeclare.subst(m5workendIop)
     decoder_output += BasicConstructor.subst(m5workendIop)
     exec_output += PredOpExecute.subst(m5workendIop)
+    
+    m5spm_alloc_code = '''
+    PseudoInst::spm_alloc(xc->tcBase(), R0, R2, join32to64(R1, R3));
+    '''
+
+    m5spm_alloc_code64 = '''
+    PseudoInst::spm_alloc(xc->tcBase(), X0, X1, X2);
+    '''
+
+    m5spm_allocIop = InstObjParams("m5spm_alloc", "M5spm_alloc", "PredOp",
+                           { "code": m5spm_alloc_code,
+                             "predicate_test": predicateTest },
+                             ["IsNonSpeculative", "IsUnverifiable"])
+    header_output += BasicDeclare.subst(m5spm_allocIop)
+    decoder_output += BasicConstructor.subst(m5spm_allocIop)
+    exec_output += PredOpExecute.subst(m5spm_allocIop)
+
+    m5spm_allocIop = InstObjParams("m5spm_alloc", "M5spm_alloc64", "PredOp",
+                           { "code": m5spm_alloc_code64,
+                             "predicate_test": predicateTest },
+                             ["IsNonSpeculative", "IsUnverifiable"])
+    header_output += BasicDeclare.subst(m5spm_allocIop)
+    decoder_output += BasicConstructor.subst(m5spm_allocIop)
+    exec_output += PredOpExecute.subst(m5spm_allocIop)
+    
+    m5spm_free_code = '''
+    PseudoInst::spm_free(xc->tcBase(), R0, R2, join32to64(R1, R3));
+    '''
+
+    m5spm_free_code64 = '''
+    PseudoInst::spm_free(xc->tcBase(), X0, X1, X2);
+    '''
+
+    m5spm_freeIop = InstObjParams("m5spm_free", "M5spm_free", "PredOp",
+                           { "code": m5spm_free_code,
+                             "predicate_test": predicateTest },
+                             ["IsNonSpeculative", "IsUnverifiable"])
+    header_output += BasicDeclare.subst(m5spm_freeIop)
+    decoder_output += BasicConstructor.subst(m5spm_freeIop)
+    exec_output += PredOpExecute.subst(m5spm_freeIop)
+
+    m5spm_freeIop = InstObjParams("m5spm_free", "M5spm_free64", "PredOp",
+                           { "code": m5spm_free_code64,
+                             "predicate_test": predicateTest },
+                             ["IsNonSpeculative", "IsUnverifiable"])
+    header_output += BasicDeclare.subst(m5spm_freeIop)
+    decoder_output += BasicConstructor.subst(m5spm_freeIop)
+    exec_output += PredOpExecute.subst(m5spm_freeIop)
 }};

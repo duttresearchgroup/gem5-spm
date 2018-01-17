@@ -85,6 +85,7 @@ import re
 import shutil
 import subprocess
 import sys
+import shutil
 
 from os import mkdir, environ
 from os.path import abspath, basename, dirname, expanduser, normpath
@@ -243,7 +244,7 @@ for t in BUILD_TARGETS:
     variant_path = joinpath('/',*path_dirs[:build_top+2])
     if variant_path not in variant_paths:
         variant_paths.append(variant_path)
-
+   
 # Make sure build_root exists (might not if this is the first build there)
 if not isdir(build_root):
     mkdir(build_root)
@@ -1247,6 +1248,19 @@ for variant_path in variant_paths:
     # to the configured variables.  It returns a list of environments,
     # one for each variant build (debug, opt, etc.)
     SConscript('src/SConscript', variant_dir = variant_path, exports = 'env')
+
+#---------------------------MachineType for PMMU-------------------------------------
+path_to_protocol_types = build_root+'/'+variant_dir+'/mem/protocol/'
+if not os.path.exists(path_to_protocol_types):
+    os.makedirs(path_to_protocol_types)
+
+shutil.copy(build_root+'/../src/mem/spm/node_type/MachineType.cc',path_to_protocol_types)
+shutil.copy(build_root+'/../src/mem/spm/node_type/MachineType.hh',path_to_protocol_types)
+
+#-----------------------------MessageSizeType----------------------------------------
+shutil.copy(build_root+'/../src/mem/spm/spm_message/MessageSizeType.cc',path_to_protocol_types)
+shutil.copy(build_root+'/../src/mem/spm/spm_message/MessageSizeType.hh',path_to_protocol_types)
+#------------------------------------------------------------------------------------
 
 # base help text
 Help('''

@@ -47,6 +47,11 @@ from m5.objects import *
 # starting point, and specific parameters can be overridden in the
 # specific instantiations.
 
+class L1_DSPM(SPM):
+    hit_latency = 1
+    response_latency = 1
+    size = '32kB'
+
 class L1Cache(Cache):
     assoc = 2
     tag_latency = 2
@@ -62,6 +67,12 @@ class L1_ICache(L1Cache):
 
 class L1_DCache(L1Cache):
     pass
+
+class L1_5_DCache(L1Cache):
+    tag_latency = 0
+    data_latency = 1
+    response_latency = 0
+    size = '32kB'
 
 class L2Cache(Cache):
     assoc = 8

@@ -84,4 +84,6 @@ TWO_BYTE_OP(m5_add_symbol, M5OP_ADD_SYMBOL)
 TWO_BYTE_OP(m5_panic, M5OP_PANIC)
 TWO_BYTE_OP(m5_work_begin, M5OP_WORK_BEGIN)
 TWO_BYTE_OP(m5_work_end, M5OP_WORK_END)
+TWO_BYTE_OP(m5_spm_alloc, M5OP_SPM_ALLOC) //SPM
+TWO_BYTE_OP(m5_spm_free, M5OP_SPM_FREE)   //SPM
 TWO_BYTE_OP(m5_dist_toggle_sync, M5OP_DIST_TOGGLE_SYNC)

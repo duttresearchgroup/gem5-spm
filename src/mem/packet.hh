@@ -65,6 +65,9 @@
 #include "base/types.hh"
 #include "mem/request.hh"
 #include "sim/core.hh"
+#include "mem/spm/SPMPktInfo.hh"
+#include "mem/spm/governor/GOVPktInfo.hh"
+
 
 class Packet;
 typedef Packet *PacketPtr;
@@ -1234,6 +1237,26 @@ class Packet : public Printable
      * @return string with the request's type and start<->end addresses
      */
     std::string print() const;
+
+    /**
+     * SPM-related enhancements
+     */
+
+    // The info for a spm request.
+    SPMPktInfo spmInfo;
+
+    // The info for a governor request.
+    GOVPktInfo govInfo;
+
+    // The command field of the packet.
+    MemCmd origCmd;
+
+    void saveCmd() {
+		origCmd = cmd;
+    }
+    void retrieveCmd() {
+		cmd = origCmd;
+    }
 };
 
 #endif //__MEM_PACKET_HH

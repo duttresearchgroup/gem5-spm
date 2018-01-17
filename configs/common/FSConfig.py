@@ -68,6 +68,10 @@ class MemBus(SystemXBar):
     badaddr_responder = BadAddr()
     default = Self.badaddr_responder.pio
 
+class SPMMemBus(SPMSystemXBar):
+    badaddr_responder = BadAddr()
+    default = Self.badaddr_responder.pio
+
 def fillInCmdline(mdesc, template, **kwargs):
     kwargs.setdefault('disk', mdesc.disk())
     kwargs.setdefault('rootdev', mdesc.rootdev())

@@ -1068,10 +1068,12 @@ decode OPCODE default Unknown::unknown() {
             } // M5 Annotate Operations
 #undef CPANN
             0x56: m5reserved2({{
-                warn("M5 reserved opcode ignored");
+                //warn("M5 reserved opcode ignored");
+                PseudoInst::spm_alloc(xc->tcBase(), R16, R17, R18);
             }}, IsNonSpeculative);
             0x57: m5reserved3({{
-                warn("M5 reserved opcode ignored");
+                //warn("M5 reserved opcode ignored");
+                PseudoInst::spm_free(xc->tcBase(), R16, R17, R18);
             }}, IsNonSpeculative);
             0x58: m5reserved4({{
                 warn("M5 reserved opcode ignored");

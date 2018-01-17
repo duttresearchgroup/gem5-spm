@@ -151,6 +151,8 @@ Network::MessageSizeType_to_int(MessageSizeType size_type)
       case MessageSizeType_ResponseL2hit_Data:
       case MessageSizeType_Writeback_Data:
         return m_data_msg_size;
+      case MessageSizeType_Access:
+        return 8 + m_control_msg_size; // maximum access size happens when accessing 64-bit data
       default:
         panic("Invalid range for type MessageSizeType");
         break;
