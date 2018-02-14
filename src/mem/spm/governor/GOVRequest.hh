@@ -161,6 +161,7 @@ typedef struct Annotations
     DeallocationModes dealloc_mode;
     DataImportance data_importance;
     ThreadPriority app_priority;
+    uint32_t spm_addr;
 
     Annotations()
     {
@@ -170,6 +171,7 @@ typedef struct Annotations
         dealloc_mode = WRITE_BACK;
         data_importance = MAX_IMPORTANCE;
         app_priority = HIGH_PRIORITY;
+        spm_addr = 0;
     }
 
 } Annotations;
@@ -184,7 +186,7 @@ inline double writeBERfromAnnotations(Approximation approximation)
 {
     return pow_10[(approximation)      & 0x000000000000000F];
 }
-
+/*
 typedef struct AddressRange
 {
     Addr start_addr;
@@ -200,7 +202,7 @@ typedef struct AddressRange
         end_addr = _end_addr;
     }
 } AddressRange;
-
+*/
 enum VARangeMode
 {
     Original,
@@ -233,18 +235,18 @@ class GOVRequest
 
     ThreadContext *tc;
     GOVCommand cmd;
-    AddressRange address_range;
+    AddrRange address_range;
     uint64_t metadata;
     Annotations *annotations;
     int pages_served;
 
     GOVRequest(ThreadContext *_tc, GOVCommand _cmd,
-               Addr _start_addr, Addr _end_addr, uint64_t _metadata)
+               Addr _start_addr, Addr _end_addr, uint64_t _metadata) :
+        address_range(_start_addr,_end_addr)
     {
         tc = _tc;
         cmd = _cmd;
-        address_range.start_addr = _start_addr;
-        address_range.end_addr = _end_addr;
+
         metadata = _metadata;
 
         annotations = new Annotations();
@@ -267,6 +269,7 @@ class GOVRequest
             annotations->alloc_mode      = static_cast<AllocationModes>((metadata >> 12)  & 0x000000000000000F);
             annotations->data_importance = static_cast<DataImportance>((metadata >> 16) & 0x000000000000000F);
             annotations->app_priority    = static_cast<ThreadPriority>((metadata >> 20) & 0x000000000000000F);
+            annotations->spm_addr        = static_cast<uint32_t>((metadata >> 32) & 0x00000000FFFFFFFF);
         }
 
         else if (cmd == Deallocation)
@@ -345,13 +348,13 @@ class GOVRequest
     {
         switch (mode) {
             case Original:
-                return address_range.start_addr;
+                return address_range.start();
                 break;
             case Original_Aligned:
-                return getPMMUPtr()->spmPageAlignUP(address_range.start_addr);
+                return getPMMUPtr()->spmPageAlignUP(address_range.start());
                 break;
             case Unserved_Aligned:
-                return getPMMUPtr()->spmPageAlignUP(address_range.start_addr + pages_served * getPageSizeBytes());
+                return getPMMUPtr()->spmPageAlignUP(address_range.start() + pages_served * getPageSizeBytes());
                 break;
             default:
                 panic("Unknown VARageMode");
@@ -362,13 +365,13 @@ class GOVRequest
     {
         switch (mode) {
             case Original:
-                return address_range.end_addr;
+                return address_range.end();
                 break;
             case Original_Aligned:
-                return getPMMUPtr()->spmPageAlignDown(address_range.end_addr);
+                return getPMMUPtr()->spmPageAlignDown(address_range.end());
                 break;
             case Unserved_Aligned:
-                return getPMMUPtr()->spmPageAlignDown(address_range.end_addr);
+                return getPMMUPtr()->spmPageAlignDown(address_range.end());
                 break;
             default:
                 panic("Unknown VARageMode");
@@ -385,9 +388,9 @@ class GOVRequest
         return total_num_pages;
     }
 
-    AddressRange getVAddressRange(VARangeMode mode)
+    AddrRange getVAddressRange(VARangeMode mode)
     {
-        AddressRange address_range (getStartAddr(mode), getEndAddr(mode));
+        AddrRange address_range (getStartAddr(mode), getEndAddr(mode));
         return address_range;
     }
 

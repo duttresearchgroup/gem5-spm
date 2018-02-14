@@ -34,6 +34,7 @@ SimObject('BaseGovernor.py')
 
 Source('base.cc')
 Source('local_spm.cc')
+Source('explicit_local_spm.cc')
 Source('random_spm.cc')
 Source('greedy_spm.cc')
 Source('guaranteed_greedy_spm.cc')

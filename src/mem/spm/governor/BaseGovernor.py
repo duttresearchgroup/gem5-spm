@@ -20,6 +20,11 @@ class LocalSPM(BaseGovernor):
     type = 'LocalSPM'
     cxx_class = 'LocalSPM'
     cxx_header = "mem/spm/governor/local_spm.hh"
+
+class ExplicitLocalSPM(BaseGovernor):
+    type = 'ExplicitLocalSPM'
+    cxx_class = 'ExplicitLocalSPM'
+    cxx_header = "mem/spm/governor/explicit_local_spm.hh"
     
 class RandomSPM(BaseGovernor):
     type = 'RandomSPM'

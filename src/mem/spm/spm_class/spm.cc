@@ -176,6 +176,7 @@ SPM::functionalAccess(PacketPtr pkt, bool fromCpuSide)
         } else if (forwardSnoops && cpuSidePort->isSnooping()) {
             // if it came from the memory side, it must be a snoop request
             // and we should only forward it if we are forwarding snoops
+        	panic("SPM::functionalAccess: we shouldn't be snooping");
             cpuSidePort->sendFunctionalSnoop(pkt);
         }
     }
@@ -309,6 +310,7 @@ SPM::MemSidePort::recvFunctionalSnoop(PacketPtr pkt)
     // functional snoop (note that in contrast to atomic we don't have
     // a specific functionalSnoop method, as they have the same
     // behaviour regardless)
+	panic("SPM::MemSidePort::recvFunctionalSnoop we shouldn't get snoops");
     spm->functionalAccess(pkt, false);
 }
 

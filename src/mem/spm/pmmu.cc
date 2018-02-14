@@ -247,7 +247,7 @@ PMMU::addATTMappingsVAddress(GOVRequest *gov_request, HostInfo *host_info)
     for (int page_index = 0; page_index < num_pages; page_index++) {
 
         Addr v_page_addr = start_v_page_addr + page_index*getPageSizeBytes();
-        Addr p_spm_addr = start_p_spm_addr + + page_index*getPageSizeBytes();
+        Addr p_spm_addr = start_p_spm_addr + page_index*getPageSizeBytes();
 
         // update ATT
         if (my_att->addMapping(gov_request, host_info, page_index)) {
@@ -388,7 +388,7 @@ PMMU::removeATTMappingsSPMAddress(GOVRequest *gov_request, HostInfo *host_info)
 
       gov_request->setAnnotations(my_att->getMapping(start_v_page_addr)->annotations);
 
-      gov_request->address_range = AddressRange(start_v_page_addr,
+      gov_request->address_range = AddrRange(start_v_page_addr,
                                                 start_v_page_addr + gov_request->getPageSizeBytes());
 
       removeATTMappingsVAddress(gov_request, host_info);

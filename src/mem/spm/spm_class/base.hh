@@ -128,11 +128,11 @@ class BaseSPM : public MemObject
         { }
 
         /**
-         * Memory-side port always snoops.
+         * SPMs never require snooping.
          *
          * @return always true
          */
-        virtual bool isSnooping() const { return true; }
+        virtual bool isSnooping() const { return false; }
     };
 
     /**

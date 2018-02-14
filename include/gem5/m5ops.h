@@ -67,6 +67,10 @@ void m5_panic(void);
 void m5_work_begin(uint64_t workid, uint64_t threadid);
 void m5_work_end(uint64_t workid, uint64_t threadid);
 
+// SPM-APIs
+void m5_spm_alloc(uint64_t begin, uint64_t end, uint64_t metadata);
+void m5_spm_free(uint64_t begin, uint64_t end, uint64_t metadata);
+
 // These operations are for critical path annotation
 void m5a_bsm(char *sm, const void *id, int flags);
 void m5a_esm(char *sm);

@@ -62,7 +62,7 @@ class BaseSPM(MemObject):
     tgts_per_mshr = Param.Unsigned(1, "Max number of accesses per MSHR")
     write_buffers = Param.Unsigned(8, "Number of write buffers")
 
-    forward_snoops = Param.Bool(True,
+    forward_snoops = Param.Bool(False,
         "Forward snoops from mem side to cpu side")
     is_read_only = Param.Bool(False, "Is this SPM read only (e.g. inst)")
 

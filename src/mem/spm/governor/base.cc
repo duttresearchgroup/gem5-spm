@@ -1,8 +1,9 @@
 #include "mem/spm/governor/base.hh"
-#include "mem/spm/governor/local_spm.hh"
-#include "mem/spm/governor/random_spm.hh"
+#include "mem/spm/governor/explicit_local_spm.hh"
 #include "mem/spm/governor/greedy_spm.hh"
 #include "mem/spm/governor/guaranteed_greedy_spm.hh"
+#include "mem/spm/governor/local_spm.hh"
+#include "mem/spm/governor/random_spm.hh"
 
 #include <iostream>
 using namespace std;
@@ -12,6 +13,8 @@ BaseGovernorParams::create()
 {
     if (gov_type.compare("Local") == 0)
         return new LocalSPM(this);
+    else if (gov_type.compare("ExplicitLocal") == 0)
+        return new ExplicitLocalSPM(this);
     else if (gov_type.compare("Random") == 0)
         return new RandomSPM(this);
     else if (gov_type.compare("Greedy") == 0)
